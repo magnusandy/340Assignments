@@ -1,0 +1,17 @@
+--showing how two versions of the compose function work, one uses haskells lamba expressions the other a where clause
+-- doubleTheVal is used for testing, it is (Double -> Double)
+
+Prelude> :load problem5a.hs
+[1 of 1] Compiling Main             ( problem5a.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> doubleTheVal 2
+4.0
+*Main> newFunction = compose3 doubleTheVal doubleTheVal doubleTheVal
+*Main> newFunction 2
+16.0
+*Main> newFunctionb = compose3b doubleTheVal doubleTheVal doubleTheVal
+*Main> newFunctionb 2
+16.0
+*Main> compose3 doubleTheVal doubleTheVal doubleTheVal 4
+32.0
+*Main>

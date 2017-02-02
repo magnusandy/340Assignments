@@ -1,0 +1,8 @@
+Problem 5
+PART B)
+--See also the function compose3 as the lamda in haskell is used there, but we can formalize using currying the function of compose3 as:
+
+ compose3 = \f.\g.\h.\x.(f(g(h(x)))) f1 f2 f3
+
+compose3 is the lamda expressions above passed its first three parameters
+where the f g h are all functions and x is a double parameter and '\' is substituted for the lamda character

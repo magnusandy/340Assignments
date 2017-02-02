@@ -1,0 +1,21 @@
+Problem 1
+PART a) swap (x, y) = (y, x)
+swap :: (Integer, Double) -> (Double, Integer)
+OR
+swap :: (TypeX, TypeY) -> (TypeY, TypeX)
+
+PART b) pair x y = (x, y)
+pair :: Integer -> Double -> (Integer, Double)
+OR
+pair :: TypeX -> TypeY -> (TypeX, TypeY)
+
+PART c) double x = x*2
+double :: Integer -> Integer
+OR
+double :: TypeX -> TypeX
+
+PART d) twice f x = f (f (x))
+ --takes a function (that takes a x and returns an x) and a variable of x. returns the results as x
+ twice :: (Double -> Double) -> Double -> Double
+ OR
+ twice :: (TypeX -> TypeX) -> TypeX -> TypeX

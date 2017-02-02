@@ -1,0 +1,42 @@
+--calls the 3 versions of the function with even and odd exponents and a double value
+--testing errors if the expo is 0 or less
+
+*Main> :load problem2.hs
+[1 of 1] Compiling Main             ( problem2.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> fastExp1 2 2
+4.0
+*Main> fastExp1 2 3
+8.0
+*Main> fastExp1 2 16
+65536.0
+*Main> fastExp1 2.1 2
+4.41
+*Main> fastExp2 2 2
+4.0
+*Main> fastExp2 2 4
+16.0
+*Main> fastExp2 2 16
+65536.0
+*Main> fastExp2 2.1 2
+4.41
+*Main> fastExp3 2 2
+4.0
+*Main> fastExp3 2 4
+16.0
+*Main> fastExp3 2 16
+65536.0
+*Main> fastExp3 2.1 2
+4.41
+*Main> fastExp3 2 (-3)
+*** Exception: exponent must be above 0
+CallStack (from HasCallStack):
+  error, called at problem2/problem2.hs:29:35 in main:Main
+*Main> fastExp2 2 (-3)
+*** Exception: exponent must be above 0
+CallStack (from HasCallStack):
+  error, called at problem2/problem2.hs:19:19 in main:Main
+*Main> fastExp1 2 (-3)
+*** Exception: exponent must be above 0
+CallStack (from HasCallStack):
+  error, called at problem2/problem2.hs:6:10 in main:Main

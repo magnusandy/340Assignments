@@ -1,0 +1,25 @@
+--testing both the double function and the algorithm as well as possible error cases
+Prelude> :load problem3.hs
+[1 of 1] Compiling Main             ( problem3.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> luhnDouble 1
+2
+*Main> luhnDouble 3
+6
+*Main> luhnDouble 5
+1
+*Main> luhn 1 7 8 4
+True
+*Main> luhn 4 7 8 3
+False
+
+--ERROR TESTING
+
+*Main> luhnDouble 10
+*** Exception: value should be single digit 0 - 9
+CallStack (from HasCallStack):
+  error, called at problem3/problem3.hs:5:32 in main:Main
+*Main> luhn 1 2 12 3
+*** Exception: value should be single digit 0 - 9
+CallStack (from HasCallStack):
+  error, called at problem3/problem3.hs:5:32 in main:Main
