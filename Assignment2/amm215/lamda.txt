@@ -1,0 +1,28 @@
+----Problem----
+Problem 1 [10 Points]. Using the definitions of boolean constants and operators presented in class,
+show that the following evaluates to false. Show all your steps for a perfect mark.
+Always evaluate the "outer" applications first (i.e., use lazy evaluation), but continue to evaluate further until you obtain false.
+
+and true (not true)
+
+----Boolean Operators----
+true = \x.\y.(x)
+false = \x.\y.(y)
+not = \v.\w.\x.(v x w)
+and = \v.\w.(v w v)
+----LAMDA Solution----
+
+and true (not true)               --original equation
+\v.\w.(v w v) true (not true)     --expand and
+\w.(true w true) (not true)       --apply true to v
+(true (not true) true)            --apply (not true) to w
+\x.\y.(x) (not true) true         --expand true
+\y.((not true)) true              --apply (not true) to x
+((not true))                      --apply true to y
+\v.\w.\x.(v x w) true             --expand not
+\w.\x.(true x w)                  --apply true to v
+\w.\x.(\a.\b.(a) x w)             --expand true, note alpha-conversion of parameter names
+\w.\x.(\b.(x) w)                  --apply x to a
+\w.\x.((x))                       --apply w to b
+\x.\y.(y)                         --alpha conversion of parameter names
+false                             --matches form above so we can convert back to false

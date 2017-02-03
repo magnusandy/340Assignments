@@ -1,3 +1,8 @@
+--Problem 1 [10 Points]. Using the definitions of boolean constants and operators presented in class,
+--show that the following evaluates to false. Show all your steps for a perfect mark.
+--Always evaluate the "outer" applications first (i.e., use lazy evaluation), but continue to evaluate further until you obtain false.
+ --and true (not true)
+
 --Problem 2 [10 + 10 Points]. Define the higher-order library function curry that converts a function on pairs
 --into a curried function, and, conversely, the function uncurry that converts a curried function with two arguments
 --into a function on pairs.
@@ -40,15 +45,49 @@ uncurry argFunc = pairVersion argFunc
 -- For example, for (329, 2), whole should return 32, and fraction should return 0.9.
 
 data MyFloat = MyFloat (Integer, Integer)
+--TODO ask if i can just do conversions baack and forth to normal doubles
+
+
+whole :: MyFloat -> Integer
+whole myF = floor (toDouble myF)
+
+--TODO ask about this, fraction of 1.2 == 0.199999996 is that cool?
+fraction :: MyFloat -> Double
+fraction myF = ((toDouble myF) - (fromIntegral (whole myF)))
+
+ezMult :: MyFloat -> MyFloat -> MyFloat
+ezMult f1 f2 = fromDouble ((toDouble f1) * (toDouble f2))
+
+ezAdd :: MyFloat -> MyFloat -> MyFloat
+ezAdd f1 f2 = fromDouble ((toDouble f1) + (toDouble f2))
+
+ezSub :: MyFloat -> MyFloat -> MyFloat
+ezSub f1 f2 = fromDouble ((toDouble f1) - (toDouble f2))
+
+ezDiv :: MyFloat -> MyFloat -> MyFloat
+ezDiv f1 f2 = fromDouble ((toDouble f1) / (toDouble f2))
 
 toDouble :: MyFloat -> Double
 toDouble (MyFloat (m,ex)) =( ((fromIntegral m)/(10.0^^(digitsInMantissa (MyFloat (m, ex))))) * (10.0^^ex))
 
+--converts a double into a MyFloat
+fromDouble :: Double -> MyFloat
+fromDouble 0 = MyFloat (0, 1)
+fromDouble dubs = (normalize (withCount (abs dubs) (digitsInNumber (floor (abs dubs))))) * (MyFloat ((floor (signum (dubs))), 1))
+  where
+    withCount :: Double -> Integer -> MyFloat
+    withCount dubNum leftDigits
+      | leftDigits > 0 = MyFloat (floor (dubNum*(10.0^16)), leftDigits)
+      | otherwise      = negExp dubNum 0 (dubNum*10.0)
+    negExp :: Double -> Integer -> Double -> MyFloat
+    negExp dubNum count biggerDub
+      |  digitsInNumber(floor (biggerDub)) > 0 = MyFloat (floor (dubNum*(10.0^16)), count)
+      | otherwise = negExp dubNum (count-1) ((biggerDub*10.0))
 --returns a normalized version of a MyFloat i.e. MyFloat(300, 1) == 3 and MyFloat(30, 1) == 3 so we want them both normalized to MyFloat(3, 1)
 --basically this function removes all trailing zeros from the first part of the pair
 normalize :: MyFloat -> MyFloat
 normalize (MyFloat (m, ex))
-  | m == 0 = (MyFloat (m, ex))
+  | m == 0 = (MyFloat (m, 1))
   | (m `mod` 10) == 0 = normalize (MyFloat ((m `div` 10), ex))
   | otherwise         = (MyFloat (m,ex))
 
@@ -60,6 +99,9 @@ denormalize newDigits myF = denormHelp (newDigits - (digitsInMantissa myF)) myF
     --  | neededDigits < 0 = error "cannot denorm with negative count, please use normalize"
       | neededDigits > 0 = MyFloat ((m*(10^neededDigits)), ex)
       | otherwise = MyFloat (m, ex)
+
+digitsInNumber ::Integer -> Integer
+digitsInNumber myInt = digitsInMantissa (MyFloat (myInt, 0))
 --counts the digits in the mantissa
 digitsInMantissa :: MyFloat -> Integer
 digitsInMantissa (MyFloat (m, ex)) =  count (abs m) 0
@@ -92,9 +134,26 @@ instance Ord MyFloat where
 --  (<=) :: MyFloat -> MyFloat -> Bool
   (<=) myF1 myF2 = (myF1 < myF2) || (myF1 == myF2)
 
+--takes in a MyFloat and prints it
+testFromInteger :: MyFloat -> [Char]
+testFromInteger myF = show myF
+
 --starts off with the case where one of the floats is 0, returns the other
 --next it sets the mantissas to be of equal length, this makes the calculations go smoother i.e. (1,1) + (999, 3) becomes (100, 1) + (999,3)
 instance Num MyFloat where
+    fromInteger i = fromDouble (fromIntegral i)
+
+    negate (MyFloat (m, ex)) = MyFloat (((-1)*m), ex )
+
+    abs (MyFloat (m, ex))
+      | m < 0    = negate (MyFloat (m, ex))
+      | otherwise = (MyFloat (m, ex))
+
+    signum (MyFloat (m, ex))
+      | m > 0  = 1
+      | m == 0 = 0
+      | m < 0  = (-1)
+
     --(+) :: MyFloat -> MyFloat -> MyFloat
     --cases where one of the numbers is 0, return the other
     (+) (MyFloat (0, _)) myF2 = myF2
@@ -123,12 +182,25 @@ instance Num MyFloat where
     (-) myF1 (MyFloat (m, ex)) = myF1 + (MyFloat ((-1)*m, ex))
     -- multiplies two myFloats together, this can be done by first normalizing the pairs, then you can multiply the mantissas together and from there figure out the exponent which can be done by:
     (*) myF1 myF2 = normalize (lens (normalize myF1) (normalize myF2))
-
       where
         lens :: MyFloat -> MyFloat -> MyFloat
         lens myF1 myF2 = mult myF1 myF2 (digitsInMantissa myF1) (digitsInMantissa myF2)
         mult :: MyFloat -> MyFloat -> Integer -> Integer -> MyFloat
         mult (MyFloat (m1, ex1)) (MyFloat (m2, ex2)) len1 len2 = MyFloat (((fromIntegral m1)*(fromIntegral m2)), ((ex1-len1)+(ex2-len2)+(digitsInMantissa (MyFloat (((fromIntegral m1)*(fromIntegral m2)), 0)))))
+
+instance Fractional MyFloat where
+    fromRational x = fromDouble (fromRational x)
+
+    (/) myF1 (MyFloat (0, _)) = error "cannot divide by zero"
+    (/) myF1 myF2 = normalize (lens (normalize myF1) (normalize myF2))
+      where
+        lens :: MyFloat -> MyFloat -> MyFloat
+        lens myF1 myF2 = divs myF1 myF2 (digitsInMantissa myF1) (digitsInMantissa myF2)
+        divs:: MyFloat -> MyFloat -> Integer -> Integer -> MyFloat
+        divs (MyFloat (m1, ex1)) (MyFloat (m2, ex2)) len1 len2 = MyFloat ( (newMantissa m1 m2) , ((ex1-len1)-(ex2-len2)+(digitsInMantissa (MyFloat ((floor ((fromIntegral m1)/(fromIntegral m2))), 0)))       ))
+        --takes in both mantissas and divides them, it then multiplies by 1000000000 and chops off any remainder, this is essentially the same as taking it to 9 decimal places i.e. 4/3 = 1.333333333 it will take it to 1333333333.333 and chop off everything after the decimal giving 1333 we need a integer for the mantissa of the new thing
+        newMantissa :: Integer -> Integer -> Integer
+        newMantissa m1 m2 = floor (((fromIntegral m1)/(fromIntegral m2))*1000000000)
 
 returnLarger :: Integer -> Integer -> Integer
 returnLarger x y
