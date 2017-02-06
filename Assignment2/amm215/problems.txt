@@ -1,0 +1,619 @@
+--PROBLEM 2 TESTING
+
+--showing functionality of testing function, takes a pair
+Main> pairAdd(2,3)
+5
+*Main> curriedPairAdd = Main.curry pairAdd
+*Main> curriedPairAdd 2 3
+5
+
+--the same as the + operator
+*Main> normAdd 4 5
+9
+
+*Main> uncurriedAdd = Main.uncurry normAdd
+*Main> uncurriedAdd (4,5)
+9
+
+--applying the polymorphic uncurry to a string function
+*Main> pairConcater = Main.uncurry (++)
+*Main> pairConcater ("Hello ", "World")
+"Hello World"
+
+------------PROBLEM 3----------------
+--TESTING CUSTOM HELPER FUNCTIONS--
+
+----------------------------Normalize removes all trailing zeros so that (300, 1) can be compared to (300000, 1) as they should be equal
+
+*Main> x = MyFloat (300, 1)
+*Main> normalize x
+(3,1)
+*Main> normalize (MyFloat (-4500, -2))
+(-45,-2)
+*Main> normalize (MyFloat (-45001, -2))
+(-45001,-2)
+*Main> normalize (MyFloat (-45001, 2))
+(-45001,2)
+*Main> normalize (MyFloat (45001000, 2))
+(45001,2)
+
+--------------------------denormalize is the opposite, it adds trailing zeros up to a specified number of total digits
+
+*Main> denormalize  4(MyFloat (3, 2))
+(3000,2)
+*Main> denormalize  5 (MyFloat (3, 2))
+(30000,2)
+*Main> denormalize  3 (MyFloat (3, 2))
+(300,2)
+*Main> denormalize  3 (MyFloat (-3, 2))
+(-300,2)
+*Main> denormalize  3 (MyFloat (-3, -2))
+(-300,-2)
+*Main> denormalize  3 (MyFloat (3, -2))
+(300,-2)
+*Main> denormalize  (-1) (MyFloat (3, -2))
+(3,-2)
+
+-------------------------- Digit counting functions
+
+*Main> digitsInNumber 0001
+1
+*Main> digitsInNumber (-2323)
+4
+*Main> digitsInNumber (-23234)
+5
+*Main> digitsInNumber (023234)
+5
+*Main> digitsInMantissa (MyFloat (300, 1))
+3
+*Main> digitsInMantissa (MyFloat (-300, 1))
+3
+*Main> digitsInMantissa (MyFloat (-41, 1))
+2
+*Main> digitsInMantissa (MyFloat (-04345, 1))
+
+----------------------------toFloat and fromFloat to convert from regular number to MyFloats and vice versa
+
+*Main> fromFloat 4
+(4,1)
+*Main> fromFloat 4.56
+(456,1)
+*Main> fromFloat 4.5600
+(456,1)
+*Main> fromFloat 4.56001
+(456001,1)
+*Main> fromFloat (-4.56001)
+(-456001,1)
+*Main> fromFloat (-4560.01)
+(-4560009728,4)
+*Main> fromFloat (-0.0065)
+(-65,-2)
+*Main> fromFloat (460.21)
+(460209984,3)
+*Main> fromFloat (460.2)
+(4602,3)
+*Main> toFloat (MyFloat (3,1))
+3.0
+*Main> toFloat (MyFloat (3,2))
+30.000002
+*Main> toFloat (MyFloat (3, 34))
+3.0000004e33
+*Main> toFloat (MyFloat (304, 4))
+3040.0
+*Main> toFloat (MyFloat (30, 4))
+3000.0
+*Main> toFloat (MyFloat (-30, 4))
+-3000.0
+*Main> toFloat (MyFloat (-30, -4))
+-3.0000001e-5
+*Main> toFloat (MyFloat (-30, -2))
+-3.0e-3
+*Main> toFloat (MyFloat (-30, -1))
+-3.0000001e-2
+*Main> toFloat (MyFloat (-3, -1))
+-3.0000001e-2
+
+-------------------------------INSTANCE FUNCTION --------------------------------
+
+----------------Show, show has been implicitly tested in all the other tests as many times MyFloats are printed as (x, y)
+
+*Main> show x
+"(300,1)"
+*Main> show (MyFloat (4,2))
+"(4,2)"
+*Main>
+
+
+---------------Eq, ==, < and <= are explicitly defined, the rest are inferred
+
+-- (==)
+*Main> (MyFloat (400, 1)) == (MyFloat (4, 1))
+True
+*Main>
+*Main> (MyFloat (400, 1)) == (MyFloat (4, 1))
+True
+*Main> (MyFloat (400, 1)) == (MyFloat (4, 2))
+False
+*Main> (MyFloat (400, 1)) == (MyFloat (-4, 2))
+False
+*Main> (MyFloat (400, 1)) == (MyFloat (-4, -2))
+False
+*Main> (MyFloat (400, -2)) == (MyFloat (-4, -2))
+False
+*Main> (MyFloat (-400, -2)) == (MyFloat (-4, -2))
+True
+*Main> (MyFloat (4, -2)) == (MyFloat (4, 2))
+False
+*Main> (MyFloat (4, 2)) == (MyFloat (4, 2))
+
+-- (<)
+
+*Main> (MyFloat (-1, 1)) < (MyFloat (-1, 3))
+False
+*Main> (MyFloat (-1, 4)) < (MyFloat (-1, 3))
+True
+*Main> (MyFloat (0, 4)) < (MyFloat (0, 3))
+False
+*Main> (MyFloat (0, 4)) < (MyFloat (0, -3))
+False
+*Main> (MyFloat (0, -4)) < (MyFloat (0, -3))
+False
+*Main> (MyFloat (-1, -4)) < (MyFloat (-1, -3))
+False
+*Main> (MyFloat (-1, -4)) < (MyFloat (-1, -5))
+True
+*Main> (MyFloat (1, 4)) < (MyFloat (1, 5))
+True
+*Main> (MyFloat (1, 4)) < (MyFloat (1, 3))
+False
+*Main> (MyFloat (1, -4)) < (MyFloat (1, 3))
+True
+*Main> (MyFloat (1, -4)) < (MyFloat (1, -3))
+True
+*Main> (MyFloat (1, 4)) < (MyFloat (1, -3))
+False
+*Main> (MyFloat (0, 4)) < (MyFloat (1, -3))
+True
+*Main> (MyFloat (0, 4)) < (MyFloat (-1, -3))
+False
+*Main> (MyFloat (0, 4)) < (MyFloat (0, -3))
+False
+*Main> (MyFloat (1, 4)) < (MyFloat (0, -3))
+False
+*Main> (MyFloat (-1, 4)) < (MyFloat (0, -3))
+True
+*Main> (MyFloat (-1, 4)) < (MyFloat (1, -3))
+True
+*Main> (MyFloat (1, 4)) < (MyFloat (-1, -3))
+False
+*Main> (MyFloat (1, 4)) < (MyFloat (-1, -3))
+
+-- (<=)
+*Main> (MyFloat (1, 4)) <= (MyFloat (-1, -3))
+False
+*Main> (MyFloat (1, 4)) <= (MyFloat (1, 9))
+True
+*Main> (MyFloat (1, 9)) <= (MyFloat (1, 9))
+True
+*Main> (MyFloat (0, 8)) <= (MyFloat (0, 9))
+True
+*Main> (MyFloat (0, 8)) <= (MyFloat (0, 7))
+True
+
+-- (/=)
+
+*Main> (MyFloat (4, 4)) /= (MyFloat (4, 4))
+False
+*Main> (MyFloat (4, 4)) /= (MyFloat (4, 3))
+True
+*Main> (MyFloat (4, 4)) /= (MyFloat (4, -3))
+True
+*Main> (MyFloat (4, 4)) /= (MyFloat (1, -3))
+True
+*Main> (MyFloat (4, -4)) /= (MyFloat (1, -3))
+True
+*Main> (MyFloat (1, -3)) /= (MyFloat (1, -3))
+
+-- (>)
+
+*Main> (MyFloat (-1, 1)) > (MyFloat (-1, 3))
+True
+*Main> (MyFloat (-1, 4)) > (MyFloat (-1, 3))
+False
+*Main> (MyFloat (0, 4)) > (MyFloat (0, 3))
+False
+*Main> (MyFloat (0, 4)) > (MyFloat (0, -3))
+False
+*Main> (MyFloat (0, -4)) > (MyFloat (0, -3))
+False
+*Main> (MyFloat (-1, -4)) > (MyFloat (-1, -3))
+True
+*Main> (MyFloat (-1, -4)) > (MyFloat (-1, -5))
+False
+*Main> (MyFloat (1, 4)) > (MyFloat (1, 5))
+False
+*Main> (MyFloat (1, 4)) > (MyFloat (1, 3))
+True
+*Main> (MyFloat (1, -4)) > (MyFloat (1, 3))
+False
+*Main> (MyFloat (1, -4)) > (MyFloat (1, -3))
+False
+*Main> (MyFloat (1, 4)) > (MyFloat (1, -3))
+True
+*Main> (MyFloat (0, 4)) > (MyFloat (1, -3))
+False
+*Main> (MyFloat (0, 4)) > (MyFloat (-1, -3))
+True
+*Main> (MyFloat (0, 4)) > (MyFloat (0, -3))
+False
+*Main> (MyFloat (1, 4)) > (MyFloat (0, -3))
+True
+*Main> (MyFloat (-1, 4)) > (MyFloat (0, -3))
+False
+*Main> (MyFloat (-1, 4)) > (MyFloat (1, -3))
+False
+*Main> (MyFloat (1, 4)) > (MyFloat (-1, -3))
+True
+*Main> (MyFloat (1, 4)) > (MyFloat (-1, -3))
+True
+
+--(>=)
+
+*Main> (MyFloat (1, 4)) >= (MyFloat (-1, -3))
+True
+*Main> (MyFloat (1, 4)) >= (MyFloat (1, 9))
+False
+*Main> (MyFloat (1, 9)) >= (MyFloat (1, 9))
+True
+*Main> (MyFloat (0, 8)) >= (MyFloat (0, 9))
+True
+*Main> (MyFloat (0, 8)) >= (MyFloat (0, 7))
+True
+
+------------------------ Num, aritimetic operators (+), (-), (*), abs, negate, signum
+*Main> abs (MyFloat (0, 7))
+(0,7)
+*Main> abs (MyFloat (-1, 7))
+(1,7)
+*Main> abs (MyFloat (11, 7))
+(11,7)
+*Main> abs (MyFloat (11, -7))
+(11,-7)
+*Main> abs (MyFloat (-11, -7))
+(11,-7)
+*Main> signum (MyFloat (-11, -7))
+(-1,1)
+*Main> signum (MyFloat (-11, 7))
+(-1,1)
+*Main> signum (MyFloat (11, 7))
+(1,1)
+*Main> signum (MyFloat (0, 7))
+(0,1)
+*Main> negate (MyFloat (0, 7))
+(0,7)
+*Main> negate (MyFloat (1, 7))
+(-1,7)
+*Main> negate (MyFloat (-1, 7))
+(1,7)
+*Main> negate (MyFloat (-1, -7))
+(1,-7)
+*Main> negate (MyFloat (1, -7))
+(-1,-7)
+
+--- (+)
+
+Ok, modules loaded: Main.
+*Main> (MyFloat (-1, 1)) + (MyFloat (-1, 1))
+(-2,1)
+*Main> (MyFloat (-1, 1)) + (MyFloat (-1, 2))
+(-11,2)
+*Main> (MyFloat (-1, 1)) + (MyFloat (-1, -1))
+(-101,1)
+*Main> (MyFloat (-9, 1)) + (MyFloat (-1, 1))
+(-1,2)
+*Main> (MyFloat (-999, 1)) + (MyFloat (-1, -1))
+(-1,2)
+*Main> (MyFloat (-999, 1)) + (MyFloat (0, -1))
+(-999,1)
+*Main> (MyFloat (0, 1)) + (MyFloat (-234, -1))
+(-234,-1)
+*Main> (MyFloat (1, 1)) + (MyFloat (1, 1))
+(2,1)
+*Main> (MyFloat (1, 1)) + (MyFloat (1, -1))
+(101,1)
+*Main> (MyFloat (1, -1)) + (MyFloat (1, -1))
+(2,-1)
+*Main> (MyFloat (1, -1)) + (MyFloat (01, -1))
+(2,-1)
+*Main> (MyFloat (1, -1)) + (MyFloat (01, 2))
+(1001,2)
+*Main> (MyFloat (1, 1)) + (MyFloat (01, 2))
+(11,2)
+*Main> (MyFloat (9, 1)) + (MyFloat (1, 1))
+(1,2)
+*Main> (MyFloat (9, 1)) + (MyFloat (1, -1))
+(901,1)
+*Main> (MyFloat (109, 1)) + (MyFloat (-1, 1))
+(9,-1)
+*Main> (MyFloat (1, 3)) + (MyFloat (-1, 1))
+(99,2)
+*Main> (MyFloat (1, 3)) + (MyFloat (-1, -1))
+(9999,2)
+*Main> (MyFloat (1, 3)) + (MyFloat (1, -1))
+(10001,3)
+*Main> (MyFloat (999, 3)) + (MyFloat (1, -1))
+(99901,3)
+*Main> (MyFloat (999, 1)) + (MyFloat (1, -1))
+(1,2)
+*Main> (MyFloat (1, 1)) + (MyFloat (1001, -1))
+(101001,1)
+*Main> (MyFloat (1, 1)) + (MyFloat (1001, -1))
+(101001,1)
+*Main> (MyFloat (1, 1)) + (MyFloat (101, -1))
+(10101,1)
+
+
+----- (-)
+
+*Main> (MyFloat (-1, 1)) - (MyFloat (-1, 1))
+(0,1)
+*Main> (MyFloat (-1, 1)) - (MyFloat (-1, 2))
+(9,1)
+*Main> (MyFloat (-1, 1)) - (MyFloat (-1, -1))
+(-99,0)
+*Main> (MyFloat (-9, 1)) - (MyFloat (-1, 1))
+(-8,1)
+*Main> (MyFloat (-999, 1)) - (MyFloat (-1, -1))
+(-998,1)
+*Main> (MyFloat (-999, 1)) - (MyFloat (0, -1))
+(-999,1)
+*Main> (MyFloat (0, 1)) - (MyFloat (-234, -1))
+(234,-1)
+*Main> (MyFloat (1, 1)) - (MyFloat (1, 1))
+(0,1)
+*Main> (MyFloat (1, 1)) - (MyFloat (1, -1))
+(99,0)
+*Main> (MyFloat (1, -1)) - (MyFloat (1, -1))
+(0,1)
+*Main> (MyFloat (1, -1)) - (MyFloat (01, -1))
+(0,1)
+*Main> (MyFloat (1, -1)) - (MyFloat (01, 2))
+(-999,1)
+*Main> (MyFloat (1, 1)) - (MyFloat (01, 2))
+(-9,1)
+*Main> (MyFloat (9, 1)) - (MyFloat (1, 1))
+(8,1)
+*Main> (MyFloat (9, 1)) - (MyFloat (1, -1))
+(899,1)
+*Main> (MyFloat (109, 1)) - (MyFloat (-1, 1))
+(209,1)
+*Main> (MyFloat (1, 3)) - (MyFloat (-1, 1))
+(101,3)
+*Main> (MyFloat (1, 3)) - (MyFloat (-1, -1))
+(10001,3)
+*Main> (MyFloat (1, 3)) - (MyFloat (1, -1))
+(9999,2)
+*Main> (MyFloat (999, 3)) - (MyFloat (1, -1))
+(99899,3)
+*Main> (MyFloat (999, 1)) - (MyFloat (1, -1))
+(998,1)
+*Main> (MyFloat (1, 1)) - (MyFloat (1001, -1))
+(98999,0)
+*Main> (MyFloat (1, 1)) - (MyFloat (1001, -1))
+(98999,0)
+
+------ (*)
+
+Ok, modules loaded: Main.
+*Main> (MyFloat (0, 1)) * (MyFloat (1, -1))
+(0,1)
+*Main> (MyFloat (0, 1)) * (MyFloat (0, -1))
+(0,1)
+*Main> (MyFloat (23232, 1)) * (MyFloat (0, -1))
+(0,1)
+*Main> (MyFloat (1, 1)) * (MyFloat (1, 1))
+(1,1)
+*Main> (MyFloat (1, 1)) * (MyFloat (2, 1))
+(2,1)
+*Main> (MyFloat (-1, 1)) * (MyFloat (2, 1))
+(-2,1)
+*Main> (MyFloat (-1, 1)) * (MyFloat (-2, 1))
+(2,1)
+*Main> (MyFloat (-2, 1)) * (MyFloat (-2, 1))
+(4,1)
+*Main> (MyFloat (-2, 1)) * (MyFloat (-2, -1))
+(4,-1)
+*Main> (MyFloat (-2, -1)) * (MyFloat (-2, -1))
+(4,-3)
+*Main> (MyFloat (-2, -1)) * (MyFloat (-2, 10))
+(4,8)
+*Main> (MyFloat (-2, -1)) * (MyFloat (-2, 2))
+(4,0)
+*Main> (MyFloat (4, 2)) * (MyFloat (3, 2))
+(12,4)
+*Main> (MyFloat (4, 1)) * (MyFloat (3, 2))
+(12,3)
+
+----- (/)
+Ok, modules loaded: Main.
+*Main> (MyFloat (1, 1))  /(MyFloat (-2, 1))
+(-5,0)
+*Main> (MyFloat (1, 1)) *(MyFloat (-2, 1))
+(-2,1)
+*Main> (MyFloat (1, 1))  /(MyFloat (-2, 1))
+(-5,0)
+*Main> (MyFloat (1, 1)) *(MyFloat (-5, 0))
+(-5,0)
+*Main> (MyFloat (4, 1))  /(MyFloat (3, 2))
+(1333333,0)
+*Main> (MyFloat (4, 1))  /(MyFloat (3, 2))
+(1333333,0)
+*Main> (MyFloat (4, 1))  /(MyFloat (1, 2))
+(4,0)
+*Main> (MyFloat (1, 1))  /(MyFloat (1, 2))
+(1,0)
+*Main> (MyFloat (1, 1))  /(MyFloat (1, 1))
+(1,1)
+*Main> (MyFloat (1, 1))  /(MyFloat (0, 1))
+*** Exception: cannot divide by zero
+CallStack (from HasCallStack):
+  error, called at problems.hs:211:33 in main:Main
+*Main> (MyFloat (1, 1))  /(MyFloat (2, 1))
+(5,0)
+*Main> (MyFloat (1, 1))  /(MyFloat (-2, 1))
+(-5,0)
+*Main> (MyFloat (6, 2))  /(MyFloat (12, 3))
+(5,0)
+*Main> (MyFloat (6, 2))  /(MyFloat (12, 2))
+(5,1)
+*Main> (MyFloat (-6, 2))  /(MyFloat (-12, 2))
+(5,1)
+*Main> (MyFloat (-6, 2))  /(MyFloat (-12, -2))
+(5,5)
+*Main> (MyFloat (1, 2))  /(MyFloat (1, -1))
+(1,4)
+
+
+---------------------ADDITIONAL FUNCTIONS-----------------------
+------whole
+Ok, modules loaded: Main.
+*Main> whole (MyFloat (3292,-1))
+0
+*Main> whole (MyFloat (-3292,-1))
+0
+*Main> whole (MyFloat (-3292,-10))
+0
+*Main> whole (MyFloat (3292,-10))
+0
+*Main> whole (MyFloat (-3292,10))
+-3292000000
+*Main> whole (MyFloat (329,2))
+32
+*Main> whole (MyFloat (39,2))
+39
+*Main> whole (MyFloat (3,2))
+30
+
+--fraction
+*Main> fraction (MyFloat (322,2))
+0.20000076
+*Main> fraction (MyFloat (329,2))
+0.9000015
+*Main> fraction (MyFloat (340,2))
+0.0
+*Main> fraction (MyFloat (-340,2))
+0.0
+*Main> fraction (MyFloat (-349,2))
+-0.9000015
+*Main> fraction (MyFloat (-349,-1))
+-3.4900002e-2
+*Main> fraction (MyFloat (12,1))
+0.19999993
+*Main>
+
+--PROBLEM 4
+*Main> l1 = [1,1,1]
+*Main> l2 = [2,2,2]
+*Main> l3 = [3,3,3,3,3,3]
+*Main> la = ['a', 'a', 'a']
+*Main> lb = ['b', 'b', 'b']
+
+*Main> shuffle l1 l2
+[1,2,1,2,1,2]
+*Main> shuffle l2 l1
+[2,1,2,1,2,1]
+*Main> shuffle l2 l3
+[2,3,2,3,2,3,3,3,3]
+*Main> shuffle l2 []
+[2,2,2]
+*Main> shuffle [] l3
+[3,3,3,3,3,3]
+*Main> shuffle l3 l1
+[3,1,3,1,3,1,3,3,3]
+*Main> shuffle la lb
+"ababab"
+
+--PROBLEM 5
+
+*Main> splitList = [1,2,3,4,5,6,7,8]
+*Main> split 4 splitList
+([1,2,3,4],[5,6,7,8])
+*Main> split 1 splitList
+([1],[2,3,4,5,6,7,8])
+*Main> split 7 splitList
+([1,2,3,4,5,6,7],[8])
+*Main> split 8 splitList
+([1,2,3,4,5,6,7,8],[])
+*Main> split 0 splitList
+([],[1,2,3,4,5,6,7,8])
+
+--ERROR TESTING
+
+*Main> split (-6) splitList
+*** Exception: n must be positive
+CallStack (from HasCallStack):
+  error, called at problems.hs:238:13 in main:Main
+*Main> split 100  splitList
+*** Exception: n shouldn't be longer than the list
+CallStack (from HasCallStack):
+  error, called at problems.hs:239:34 in main:Main
+*Main>
+
+--PROBLEM 6
+
+*Main> :load problems.hs
+[1 of 1] Compiling Main             ( problems.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> nshuffle 1 0
+"br"
+*Main> nshuffle 3 0
+"bbbrrr"
+*Main> nshuffle 3 1
+"brbrbr"
+*Main> nshuffle 3 2
+"brrbbr"
+*Main> nshuffle 3 3
+"bbrbrr"
+*Main> nshuffle 0 2
+""
+*Main> nshuffle 0 3
+""
+*Main> nshuffle 0 0
+""
+*Main> nshuffle 2 0
+"bbrr"
+
+--ERROR CASES
+
+*Main> nshuffle (-1) 1
+"*** Exception: cannot shuffle lists with negative ammounts of characters in them
+CallStack (from HasCallStack):
+  error, called at problems.hs:262:13 in main:Main
+*Main> nshuffle 3 (-1)
+"*** Exception: cannot shuffle a negative ammount of times
+CallStack (from HasCallStack):
+  error, called at problems.hs:263:13 in main:Main
+*Main>
+
+--PROBLEM 7
+*Main> :load problems.hs
+[1 of 1] Compiling Main             ( problems.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> consecutive "aaaabbbbc"
+4
+*Main> consecutive "aaaabbbbbc"
+5
+*Main> consecutive "aaaaabbbbc"
+5
+*Main> consecutive ""
+0
+*Main> consecutive "a"
+1
+*Main> consecutive "cccaaaabbbbb"
+5
+*Main> consecutive "abababababa"
+1
+*Main> consecutive "Hello World"
+2
+*Main> consecutive "HhhHello"
+2
