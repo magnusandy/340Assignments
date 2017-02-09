@@ -47,16 +47,23 @@ uncurry argFunc = pairVersion argFunc
 --Also define functions whole and fraction to extract the part of the represented number to the left of the decimal point
 --(as an Int) and to the right of the decimal number (as a standard Haskell floating point number), respectively.
 -- For example, for (329, 2), whole should return 32, and fraction should return 0.9.
+type Mantissa = Integer
+type Exponent = Integer
 
-data MyFloat = MyFloat (Integer, Integer)
+data MyFloat = MyFloat (Mantissa, Exponent)
 
---TODO might have to do this differently
 whole :: MyFloat -> Integer
-whole myF = truncate (toFloat myF)
+whole (MyFloat (m, ex)) = (signum m)*(helper (abs (normalize (MyFloat (m, ex)))))
+  where
+    helper :: MyFloat -> Integer
+    helper (MyFloat (m, ex))
+      | ex <= 0  = 0 -- if the exponent is negative the number before the digit will be 0
+      | (digitsInNumber m) == ex = m
+      | ((digitsInNumber m) - ex) > 0 = m `div` (10^((digitsInNumber m) - ex))
+      | ((digitsInNumber m) - ex) < 0 = m * (10^(abs ((digitsInNumber m) - ex)))
 
---TODO ask about this, fraction of 1.2 == 0.199999996 is that cool?
 fraction :: MyFloat -> Float
-fraction myF = ((toFloat myF) - (fromIntegral (whole myF)))
+fraction (MyFloat (m, ex)) =  (signum (fromIntegral m))*(abs (((fromIntegral m)/(10.0^^(digitsInMantissa (MyFloat (m, ex))))) * (10.0^^ex))- abs (fromIntegral (whole (MyFloat (m, ex)))))
 
 toFloat :: MyFloat -> Float
 toFloat (MyFloat (m,ex)) =( ((fromIntegral m)/(10.0^^(digitsInMantissa (MyFloat (m, ex))))) * (10.0^^ex))
