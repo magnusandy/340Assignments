@@ -198,7 +198,7 @@ instance Num MyFloat where
         lens :: MyFloat -> MyFloat -> MyFloat
         lens myF1 myF2 = mult myF1 myF2 (digitsInMantissa myF1) (digitsInMantissa myF2)
         mult :: MyFloat -> MyFloat -> Integer -> Integer -> MyFloat
-        mult (MyFloat (m1, ex1)) (MyFloat (m2, ex2)) len1 len2 = MyFloat (((fromIntegral m1)*(fromIntegral m2)), ((ex1-len1)+(ex2-len2)+(digitsInMantissa (MyFloat (((fromIntegral m1)*(fromIntegral m2)), 0)))))
+        mult (MyFloat (m1, ex1)) (MyFloat (m2, ex2)) len1 len2 = MyFloat (((m1)*(m2)), ((ex1-len1)+(ex2-len2)+(digitsInMantissa (MyFloat (((m1)*(m2)), 0)))))
 
 instance Fractional MyFloat where
     fromRational x = fromFloat (fromRational x)
