@@ -140,13 +140,14 @@ instance Ord MyFloat where
 --  (<=) :: MyFloat -> MyFloat -> Bool
   (<=) myF1 myF2 = (myF1 < myF2) || (myF1 == myF2)
 
---takes in a MyFloat and prints it
+--takes in a MyFloat and prints it, used to test frominteger
 testFromInteger :: MyFloat -> [Char]
 testFromInteger myF = show myF
 
 --starts off with the case where one of the floats is 0, returns the other
 --next it sets the mantissas to be of equal length, this makes the calculations go smoother i.e. (1,1) + (999, 3) becomes (100, 1) + (999,3)
 instance Num MyFloat where
+  --converts an integer to a MyFloat, created to remove compile warnings. used in the case of implicit casting. i.e. a function signature calls for a myfloat and an integer is given, it will use this function to cast it
     fromInteger i = fromFloat (fromIntegral i)
 
     negate (MyFloat (m, ex)) = MyFloat (((-1)*m), ex )
@@ -201,6 +202,7 @@ instance Num MyFloat where
         mult (MyFloat (m1, ex1)) (MyFloat (m2, ex2)) len1 len2 = MyFloat (((m1)*(m2)), ((ex1-len1)+(ex2-len2)+(digitsInMantissa (MyFloat (((m1)*(m2)), 0)))))
 
 instance Fractional MyFloat where
+  --converts a rational number to a MyFloat, added to remove the compile wanrning
     fromRational x = fromFloat (fromRational x)
 
     (/) myF1 (MyFloat (0, _)) = error "cannot divide by zero"
@@ -214,11 +216,13 @@ instance Fractional MyFloat where
         newMantissa :: Integer -> Integer -> Integer
         newMantissa m1 m2 = floor (((fromIntegral m1)/(fromIntegral m2))*(10^6))
 
+--helper function for the MyFloat
 returnLarger :: Integer -> Integer -> Integer
 returnLarger x y
   | x >= y = x
   | otherwise = y
 
+  --helper function for the MyFloat
 returnSmaller :: Integer -> Integer -> Integer
 returnSmaller x y
     | x >= y = y
@@ -297,11 +301,9 @@ consecutive [] = 0
 consecutive (firstChar:restOfList) = consecCounter restOfList firstChar 1 1
   where
     --keeps track of the last character, a current count, and the best overall count
-
     consecCounter :: [Char]->Char->Integer->Integer->Integer
     --once the list is empty, return the current best score
     consecCounter [] lastChar currentCount best = best
-
     consecCounter (h:t) lastChar currentCount best
       --if the current character is the same as the one before we can increase the counter and check to see if its the new best, otherwise we reset the
       --counter and go on the the next character in the list
