@@ -1,3 +1,6 @@
+--Andrew Magnus
+--amm215
+
 --Problem 1 [10 Points]. Using the definitions of boolean constants and operators presented in class,
 --show that the following evaluates to false. Show all your steps for a perfect mark.
 --Always evaluate the "outer" applications first (i.e., use lazy evaluation), but continue to evaluate further until you obtain false.

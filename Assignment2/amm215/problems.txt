@@ -1,3 +1,6 @@
+Andrew Magnus
+amm215
+
 --PROBLEM 2 TESTING
 
 --showing functionality of testing function, takes a pair
