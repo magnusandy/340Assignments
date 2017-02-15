@@ -1,0 +1,17 @@
+--Andrew Magnus
+--amm215
+--CMPT 340 Assignment 3
+
+*Main> :load problem3.hs
+[1 of 1] Compiling Main             ( problem3.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> luhn [2,7,3] -- 2+5+3 = 10
+True
+*Main> luhn [4,7,8,3] -- 8+7+7+3 = 25
+False
+*Main> luhn [1,7,8,4] -- 2+7+7+4 = 20
+True
+*Main> luhn [4,7,8,3,4] --  4+5+8+6+4= 27
+False
+*Main> luhn [4,7,8,3,7] --  4+5+8+6+7= 30
+True

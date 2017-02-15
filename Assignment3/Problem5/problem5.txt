@@ -1,0 +1,17 @@
+--Andrew Magnus
+--amm215
+--CMPT 340 Assignment 3
+
+Prelude> :load problem5.hs
+[1 of 1] Compiling Main             ( problem5.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> take 1 perfectInts
+[6]
+*Main> take 2 perfectInts
+[6,28]
+*Main> take 3 perfectInts
+[6,28,496]
+*Main> take 4 perfectInts
+[6,28,496,8128]
+*Main> --I would test further but the next perfect Integer is 33,550,336 and this function would take forever to run and find it.
+*Main> --There is only 49 known perfect numbers which is pretty interesting, the largest know perfect number has 44,677,235 digits

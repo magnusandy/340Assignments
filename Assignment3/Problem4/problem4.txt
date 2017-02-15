@@ -1,0 +1,9 @@
+--Andrew Magnus
+--amm215
+--CMPT 340 Assignment 3
+
+Ok, modules loaded: Main.
+*Main> singleComp2Gens --given in assignment [(x, y) | x <- [1, 2, 3], y <- [4, 5, 6]]
+[(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,4),(3,5),(3,6)]
+*Main> twoCompSingleGens --equivelent expression as above: concat [ [ (first ,second) | second <- [4,5,6] ] | first <- [1,2,3] ]
+[(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,4),(3,5),(3,6)]
