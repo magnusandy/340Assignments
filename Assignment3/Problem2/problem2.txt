@@ -5,21 +5,27 @@
 Prelude> :load problem2.hs
 [1 of 1] Compiling Main             ( problem2.hs, interpreted )
 Ok, modules loaded: Main.
-*Main> take 10 (altMap (+10) (+100) [1,2,3])
+*Main> altMap (+10) (+100) [1]
+[11]
+*Main> altMap (+10) (+100) [1, 2]
+[11,102]
+*Main> altMap (+10) (+100) []
+[]
+*Main> altMap (+10) (+100) [1,2,3]
 [11,102,13]
-*Main> take 10 (altMap (+10) (+100) [1,2,3,4])
+*Main> altMap (+10) (+100) [1,2,3,4]
 [11,102,13,104]
-*Main> take 10 (altMap (+10) (+100) [1,2,3,4,5])
+*Main> altMap (+10) (+100) [1,2,3,4,5]
 [11,102,13,104,15]
-*Main> take 10 (altMap (show) (\x -> show "x") [1,2,3,4,5])
+*Main> altMap (show) (\x -> show "x") [1,2,3,4,5]
 ["1","\"x\"","3","\"x\"","5"]
-*Main> take 10 (altMap (show) (\x -> show x) [1,2,3,4,5])
+*Main> altMap (show) (\x -> show x) [1,2,3,4,5]
 ["1","2","3","4","5"]
-*Main> take 10 (altMap (show) (\x -> show 'x') [1,2,3,4,5])
+*Main> altMap (show) (\x -> show 'x') [1,2,3,4,5]
 ["1","'x'","3","'x'","5"]
-*Main> take 10 (altMap (show) (\x -> show "somestring") [1,2,3,4,5])
+*Main> altMap (show) (\x -> show "somestring") [1,2,3,4,5]
 ["1","\"somestring\"","3","\"somestring\"","5"]
-*Main> take 10 (altMap (show) (\x -> show "even") [1,2,3,4,5])
+*Main> altMap (show) (\x -> show "even") [1,2,3,4,5]
 ["1","\"even\"","3","\"even\"","5"]
-*Main> take 10 (altMap (show) (\x -> show "even") [1,2,3,4,5,6])
+*Main> altMap (show) (\x -> show "even") [1,2,3,4,5,6]
 ["1","\"even\"","3","\"even\"","5","\"even\""]

@@ -43,6 +43,7 @@ map function = unfold (==[]) (function.head) (tail)
 
 --b) iterate f, where iterate f x produces a list by applying the function f to x an increasing number of times, as follows:
 --takes in a function that is, that function is repetidly applied to a to create a list of a's
--- iterate foo x = [x, foo x, foo (foo x), foo (foo (foo x)), ... ]
+-- iterate f x = [x, f x, f (f x), f (f (f x)), ... ]
 iterate :: (a->a) -> a -> [a]
-iterate foo x =  x : unfold ((\x -> False)) (foo) (foo) x
+--note here that the predicate is always false, and thus the return is an infinite list
+iterate f x =  x : unfold ((\g -> False)) (f) (f) x

@@ -16,22 +16,23 @@ Hint: One way to do this is by
 -}
 --calculates perfect ints in a large messy comprehension
 --Steps:
---  The inner comprehension finds factors of perfectVal but checking if anything less than the value is divisible into the perfectVal evenly and returning a list of all these factorSum
+--  The inner comprehension finds factors of perfectVal but checking if anything less than (value/2 because all factors will be less than value/2) is divisible into the perfectVal evenly and returning a list of all these factorSum
 --  Next this list of factors is summed up using foldr
 --  Next this summation of factors is compared with the original value, if the summation and value are the same the number is perfect and is kept
 -- Finally return this list of perfect values
 perfectInts :: [Integer]
-perfectInts = [perfectVal | perfectVal <- [1 .. ], (foldr (+) (0) ([ factor | factor <- [1..perfectVal], ((factor < perfectVal) && (perfectVal `mod` factor) == 0)] )) == perfectVal]
+perfectInts = [perfectVal | perfectVal <- [1 .. ], (foldr (+) (0) ([ factor | factor <- [1..(perfectVal`div`2)], ((factor < perfectVal) && (perfectVal `mod` factor) == 0)] )) == perfectVal]
 
 --ALTERNATE VERSION WHICH IS EASIER TO UNDERSTAND
---calculates list of perfect ints using above helper functions
+--calculates list of perfect ints using  helper functions
 perfectIntsReadable :: [Integer]
 perfectIntsReadable = [perfectVal | perfectVal <- [1 .. ], ((factorSum perfectVal) == perfectVal)]
   where
+    --returns the sum of all factors of the given val
     factorSum :: Integer -> Integer
     factorSum val = foldr (+) 0 (factorComprehension val)
       where
         --creates a list of all factors of the given integer val
         factorComprehension :: Integer -> [Integer]
-        factorComprehension val = [ x | x <- [1..val], ((x < val) && ((val `mod` x) == 0))]
+        factorComprehension val = [ x | x <- [1..(val`div`2)], ((x < val) && ((val `mod` x) == 0))]
         --returns the sum of all the factors of val
